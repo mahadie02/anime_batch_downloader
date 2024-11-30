@@ -1,0 +1,4 @@
+If any package missing, run these commands:
+
+pip install -r requirements.txt
+python -m playwright install
