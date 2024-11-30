@@ -94,18 +94,16 @@ def main_control(base_url, download_folder, anime_name, season_number, start_epi
     # Iterate through episode URLs and download them
     episode_number = start_episode
     while episode_number <= max_episodes:
-        episode_url = base_url.rsplit('-', 1)[0] + f'-{episode_number}'
-        print(f'Checking Episode {episode_number}...')
-
-        if check_episode_exists(episode_url):
-            download_page_url = get_download_page_link(episode_url)
-            download_url = get_direct_download_link(download_page_url)
-            #print(download_url)
-            print(f'Episode {episode_number} found, downloading...')
-            download_episode(download_url, season_folder, anime_name, season_number, episode_number)
-            episode_number += 1
-        else:
-            print(f'Episode {episode_number} does not exist. Stopping.')
+        episode_url = f'{base_url.rsplit("-", 1)[0]}-{episode_number}'
+        print(f'Checking Episode {episode_number} at {episode_url}...')
+        download_page_url = get_download_page_link(episode_url)
+        download_url = get_direct_download_link(download_page_url)
+        if download_url == "":
+            print(f'Episode {episode_number} not found!')
             break
-
-    print('All available episodes downloaded successfully!')
+        #print(download_url)
+        print(f'Episode {episode_number} found, downloading...')
+        download_episode(download_url, season_folder, anime_name, season_number, episode_number)
+        episode_number += 1
+        if episode_number == max_episodes:
+            print('All episodes downloaded successfully!')
