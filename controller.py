@@ -67,15 +67,29 @@ def get_direct_download_link(download_page_url):
         page.wait_for_selector("div.dowload a:has-text('Download (1080P - mp4)')")
 
         # Extract the download link
-        download_button = page.query_selector("div.dowload a:has-text('Download (1080P - mp4)')")
-        if download_button:
-            download_url = download_button.get_attribute('href')
+        download_button_1080 = page.query_selector("div.dowload a:has-text('Download (1080P - mp4)')")
+        if download_button_1080:
+            download_url = download_button_1080.get_attribute('href')
             browser.close()
-            #print(download_url)
             return download_url
+        else:
+            page.wait_for_selector("div.dowload a:has-text('Download (720P - mp4)')")
+            download_button_720 = page.query_selector("div.dowload a:has-text('Download (720P - mp4)')")
+            if download_button_720:
+                download_url = download_button_720.get_attribute('href')
+                browser.close()
+                return download_url
+            else:
+                page.wait_for_selector("div.dowload a:has-text('Download (720P - mp4)')")
+                download_button_480 = page.query_selector("div.dowload a:has-text('Download (480P - mp4)')")
+                if download_button_480:
+                    download_url = download_button_480.get_attribute('href')
+                    browser.close()
+                    return download_url
 
         browser.close()
         return None   
+
 
 
 
@@ -93,17 +107,24 @@ def main_control(base_url, download_folder, anime_name, season_number, start_epi
 
     # Iterate through episode URLs and download them
     episode_number = start_episode
+    not_downloaded = 0
     while episode_number <= max_episodes:
         episode_url = f'{base_url.rsplit("-", 1)[0]}-{episode_number}'
         print(f'Checking Episode {episode_number} at {episode_url}...')
         download_page_url = get_download_page_link(episode_url)
         download_url = get_direct_download_link(download_page_url)
-        if download_url == "":
+
+        if download_url != None:
+            print(f'Episode {episode_number} found, downloading...')
+            download_episode(download_url, season_folder, anime_name, season_number, episode_number)
+        else:
             print(f'Episode {episode_number} not found!')
-            break
-        #print(download_url)
-        print(f'Episode {episode_number} found, downloading...')
-        download_episode(download_url, season_folder, anime_name, season_number, episode_number)
+            not_downloaded += 1
+
         episode_number += 1
-        if episode_number == max_episodes + 1:
-            print('All episodes downloaded successfully!')
+        if not_downloaded == 0:
+            if episode_number == max_episodes+1:
+                print(f'{max_episodes - start_episode} episodes downloaded successfully!')
+        else:
+            print(f'{max_episodes - start_episode - not_downloaded} episodes downloaded. {not_downloaded} episodes downlad failed!')
+
