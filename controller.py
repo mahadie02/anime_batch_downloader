@@ -105,5 +105,5 @@ def main_control(base_url, download_folder, anime_name, season_number, start_epi
         print(f'Episode {episode_number} found, downloading...')
         download_episode(download_url, season_folder, anime_name, season_number, episode_number)
         episode_number += 1
-        if episode_number == max_episodes:
+        if episode_number == max_episodes + 1:
             print('All episodes downloaded successfully!')
